@@ -41,4 +41,5 @@
     <string name="subscription_url">subscription url</string>
     <string name="confirm">confirm</string>
     <string name="subscribe_failed">subscribe failed</string>
+    <string name="repo_description">Source code</string>
 </resources>
