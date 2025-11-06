@@ -114,7 +114,7 @@ fun V2rayStarter(
     val toggle by xrayViewmodel.isServiceRunning.collectAsState()
     val context = LocalContext.current
     val color by animateColorAsState(
-        targetValue = if (toggle) Home.containerColor else Color.Gray,
+        targetValue = if (toggle) MaterialTheme.colorScheme.primary else Color.Gray,
         animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
         label = "iconColorAnim"
     )
@@ -188,7 +188,7 @@ fun Dashboard(
     val test by xrayViewmodel.testing.collectAsState()
     val isRunning by xrayViewmodel.isServiceRunning.collectAsState()
     Surface(
-        color = Color(0xFF00BFFF),
+        color = MaterialTheme.colorScheme.primary,
         tonalElevation = 8.dp,
         shadowElevation = 8.dp,
         shape = ArcBottomShape(arcHeight = 80f),
@@ -258,7 +258,7 @@ fun DashboardContent(
                 ) {
                     Icon(imageVector = Icons.Filled.KeyboardArrowUp,
                         contentDescription = "upload icon",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Column(
@@ -295,7 +295,7 @@ fun DashboardContent(
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowDown,
                         contentDescription = "download icon",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Column(

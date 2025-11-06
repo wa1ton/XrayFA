@@ -1,9 +1,7 @@
 package com.android.xrayfa.ui.component
 
-import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -126,7 +124,7 @@ fun SettingsScreen(
             ) {
                 SettingsFieldBox(
                     title = R.string.repo_site,
-                    ""
+                    content = stringResource(R.string.repo_description)
                 ) {
                     viewmodel.openRepo(context)
                 }
@@ -197,7 +195,7 @@ fun SettingsSelectBox(
     selected: String = "dark",
     options: Map<Int,String> = mapOf()
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expand by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.fillMaxWidth()
             .clickable{},
@@ -217,9 +215,9 @@ fun SettingsSelectBox(
             )
         }
         ExposedDropdownMenuBox(
-            expanded = expanded,
+            expanded = expand,
             onExpandedChange = {
-                expanded = it
+                expand = it
             },
             modifier = Modifier.weight(0.2f)
                 .padding(end = 8.dp)
@@ -228,7 +226,7 @@ fun SettingsSelectBox(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickable {
-                        expanded = !expanded
+                        expand = !expand
                     }
                         .clip(RoundedCornerShape(50))
                 ) {
@@ -239,7 +237,7 @@ fun SettingsSelectBox(
                         maxLines = 1
                     )
                     Icon(
-                        imageVector = if (expanded)
+                        imageVector = if (expand)
                             Icons.Default.KeyboardArrowUp
                         else
                             Icons.Default.KeyboardArrowDown,
@@ -247,8 +245,8 @@ fun SettingsSelectBox(
                     )
                 }
             ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = {expanded = false}
+                expanded = expand,
+                onDismissRequest = {expand = false}
             ) {
                 options.forEach { option ->
                     DropdownMenuItem(
@@ -259,6 +257,7 @@ fun SettingsSelectBox(
                         },
                         onClick = {
                             onSelected(option.key)
+                            expand = false
                         }
                     )
                 }
