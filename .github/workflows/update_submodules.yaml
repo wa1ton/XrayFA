@@ -28,5 +28,5 @@ jobs:
           git remote set-url origin git@github.com:Q7DF1/v2rayFA.git
           git submodule set-url AndroidLibXrayLite git@github.com:2dust/AndroidLibXrayLite.git
           git submodule set-url tun2socks/src/main/jni/hev-socks5-tunnel git@github.com:heiher/hev-socks5-tunnel.git
-          git commit -am "Update SDK" || exit 0
+          git commit -am "Update submodule" || exit 0
           git push
