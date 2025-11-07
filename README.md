@@ -16,7 +16,3 @@ Xray-core For Android
 - [ ] Richer UI animations
 
 ---
-
-## 🌟 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=q7df1/xrayFA&type=Date)](https://star-history.com/q7df1/xrayFA&Date)
