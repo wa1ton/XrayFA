@@ -10,7 +10,7 @@ import com.android.xrayfa.XrayBaseService
 
 /**
  *
- * Define a Service collection and add all the Activities that need dependency injection here
+ * Define a Service collection and add all the Service that need dependency injection here
  * to complete the dependency injection
  */
 @Module

@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
-
+/**
+ * This annotation indicates that the thread or coroutine described is related to the UI.
+ */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Main {

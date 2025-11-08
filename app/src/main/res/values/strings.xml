@@ -42,4 +42,8 @@
     <string name="confirm">confirm</string>
     <string name="subscribe_failed">subscribe failed</string>
     <string name="repo_description">Source code</string>
+    <string name="geo_ip" translatable="false">geoip</string>
+    <string name="geo_site" translatable="false">geosite</string>
+    <string name="geo_ip_description">IP matching table</string>
+    <string name="geo_site_description">Site matching table</string>
 </resources>
