@@ -1,5 +1,8 @@
 package xrayfa.tun2socks
 
+/**
+ * control tun2socks function start/stop
+ */
 interface Tun2SocksService {
 
 

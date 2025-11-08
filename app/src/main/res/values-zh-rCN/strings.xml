@@ -36,5 +36,7 @@
     <string name="subscription_url">订阅链接</string>
     <string name="confirm">确认</string>
     <string name="subscribe_failed">订阅失败</string>
-    <string name="repo_description">源代码</string>"
+    <string name="repo_description">源代码</string>
+    <string name="geo_ip_description">IP 匹配表</string>
+    <string name="geo_site_description">域名匹配表</string>"
 </resources>

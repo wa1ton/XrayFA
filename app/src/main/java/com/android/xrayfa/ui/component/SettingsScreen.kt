@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -17,8 +18,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -37,7 +38,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.android.xrayfa.common.repository.SettingsKeys
 
@@ -120,6 +123,14 @@ fun SettingsScreen(
                         }
                     }
                 )
+                SettingsWithBtnBox(
+                    title = R.string.geo_ip,
+                    description = R.string.geo_ip_description
+                )
+                SettingsWithBtnBox(
+                    title = R.string.geo_site,
+                    description = R.string.geo_site_description
+                )
             }
             SettingsGroup(
                 groupName = "other"
@@ -184,6 +195,55 @@ fun SettingsCheckBox(
                 onCheckedChange = onCheckedChange,
                 modifier = Modifier.align(Alignment.Center)
             )
+        }
+    }
+}
+
+
+@Composable
+fun SettingsWithBtnBox(
+    @StringRes title: Int,
+    @StringRes description: Int,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .clickable{},
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(0.7f)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(title),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = stringResource(description),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Row(
+            modifier = Modifier.weight(0.3f)
+        ) {
+            IconButton(
+                onClick = {} //todo
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_download),
+                    contentDescription = "download",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            IconButton(
+                onClick = {} //todo
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_import),
+                    contentDescription = "import",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }

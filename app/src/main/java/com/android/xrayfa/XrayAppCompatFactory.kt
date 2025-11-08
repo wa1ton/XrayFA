@@ -12,6 +12,10 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
+/**
+ * Inheriting from AppComponentFactory allows for custom component construction
+ * during system-side component creation, enabling dependency injection.
+ */
 class XrayAppCompatFactory: AppComponentFactory(),ContextAvailableCallback {
     
     companion object {
