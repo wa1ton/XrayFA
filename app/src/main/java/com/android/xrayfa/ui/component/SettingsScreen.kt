@@ -1,5 +1,11 @@
 package com.android.xrayfa.ui.component
 
+import android.app.Activity
+import android.content.Intent
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -63,6 +69,22 @@ fun SettingsScreen(
     var editType by remember { mutableStateOf(SettingsKeys.SOCKS_PORT) }
 
     val geoIPDownloading by viewmodel.geoIPDownloading.collectAsState()
+
+    val ipFilePickLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri = result.data?.data
+                Log.i(TAG, "SettingsScreen: $uri")
+            }
+    }
+
+    val domainFilePickLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri = result.data?.data
+                Log.i(TAG, "SettingsScreen: $uri")
+            }
+        }
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -136,11 +158,25 @@ fun SettingsScreen(
                     title = R.string.geo_ip,
                     description = R.string.geo_ip_description,
                     downloading = geoIPDownloading,
-                    onDownloadClick = {viewmodel.downloadGeoIP(context = context)}
+                    onDownloadClick = {viewmodel.downloadGeoIP(context = context)},
+                    onImportClick = {
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "*/*"
+                        }
+                        ipFilePickLauncher.launch(intent)
+                    }
                 )
                 SettingsWithBtnBox(
                     title = R.string.geo_site,
-                    description = R.string.geo_site_description
+                    description = R.string.geo_site_description,
+                    onImportClick = {
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "*/*"
+                        }
+                        domainFilePickLauncher.launch(intent)
+                    }
                 )
             }
             SettingsGroup(
@@ -181,12 +217,14 @@ fun SettingsCheckBox(
     onCheckedChange: (Boolean) -> Unit = {}
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth()
-            .clickable{},
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {},
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = Modifier.weight(0.8f)
+            modifier = Modifier
+                .weight(0.8f)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
             Text(
@@ -230,12 +268,14 @@ fun SettingsWithBtnBox(
     )
 
     Row(
-        modifier = Modifier.fillMaxWidth()
-            .clickable{},
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {},
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = Modifier.weight(0.7f)
+            modifier = Modifier
+                .weight(0.7f)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
             Text(
@@ -259,12 +299,13 @@ fun SettingsWithBtnBox(
                     else
                         Icons.Default.Refresh,
                     contentDescription = "download",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(24.dp)
                         .rotate(angle)
                 )
             }
             IconButton(
-                onClick = {} //todo
+                onClick = onImportClick
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_import),
@@ -287,12 +328,14 @@ fun SettingsSelectBox(
 ) {
     var expand by remember { mutableStateOf(false) }
     Row(
-        modifier = Modifier.fillMaxWidth()
-            .clickable{},
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {},
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = Modifier.weight(0.7f)
+            modifier = Modifier
+                .weight(0.7f)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
             Text(
@@ -305,7 +348,8 @@ fun SettingsSelectBox(
             )
         }
         Row(
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier
+                .weight(0.3f)
                 .padding(end = 8.dp)
         ) {
 
@@ -313,7 +357,8 @@ fun SettingsSelectBox(
                 onClick = {
                     expand = !expand
                 },
-                modifier = Modifier.clip(RoundedCornerShape(32.dp))
+                modifier = Modifier
+                    .clip(RoundedCornerShape(32.dp))
                     .weight(0.3f)
                     .padding(end = 8.dp)
             ) {
@@ -367,14 +412,16 @@ fun SettingsFieldBox(
     onClick: () ->Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .clickable(
                 enabled = enable
-            ){onClick()},
+            ) { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = Modifier.weight(0.8f)
+            modifier = Modifier
+                .weight(0.8f)
                 .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
             Text(
@@ -398,7 +445,8 @@ fun SettingsGroup(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(start = 8.dp)
     ) {
         Text(
