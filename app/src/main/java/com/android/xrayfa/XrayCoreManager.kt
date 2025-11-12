@@ -51,9 +51,9 @@ class XrayCoreManager
     }
     init {
 
-        Log.i(TAG, "${context.getExternalFilesDir("assets")?.absolutePath}")
+        Log.i(TAG, "${context.filesDir.absolutePath}")
         Libv2ray.initCoreEnv(
-            context.getExternalFilesDir("assets")?.absolutePath, Device.getDeviceIdForXUDPBaseKey()
+            context.filesDir.absolutePath, Device.getDeviceIdForXUDPBaseKey()
         )
         coreController = Libv2ray.newCoreController(controllerHandler)
     }

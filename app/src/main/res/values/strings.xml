@@ -46,4 +46,5 @@
     <string name="geo_site" translatable="false">geosite</string>
     <string name="geo_ip_description">IP matching table</string>
     <string name="geo_site_description">Site matching table</string>
+    <string name="import_geo_failed">import geo file failed</string>
 </resources>

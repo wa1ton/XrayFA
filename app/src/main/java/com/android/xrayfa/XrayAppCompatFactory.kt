@@ -59,7 +59,7 @@ class XrayAppCompatFactory: AppComponentFactory(),ContextAvailableCallback {
              .build()
 
          //init file
-         val fileDir = context.getExternalFilesDir("assets")
+         val fileDir = context.filesDir
          val geoipFile = File(fileDir, "geoip.dat")
          val geositeFile = File(fileDir, "geosite.dat")
 
@@ -72,7 +72,6 @@ class XrayAppCompatFactory: AppComponentFactory(),ContextAvailableCallback {
          }
 
          if (!geositeFile.exists()) {
-
              context.assets.open("geosite.dat").use { input ->
                  FileOutputStream(geositeFile).use { output ->
                      input.copyTo(output)

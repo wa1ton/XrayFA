@@ -2,6 +2,8 @@ package com.android.xrayfa.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +18,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.core.net.toUri
 import com.android.xrayfa.common.di.qualifier.LongTime
+import com.android.xrayfa.common.utils.calculateFileHash
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
@@ -26,7 +30,8 @@ import okio.buffer
 import okio.sink
 import java.io.File
 
-
+const val FILE_TYPE_SITE = 0
+const val FILE_TYPE_IP = 1
 class SettingsViewmodel(
     val repository: SettingsRepository,
     val okHttpClient: OkHttpClient
@@ -44,6 +49,9 @@ class SettingsViewmodel(
 
     private val _geoSiteDownloading = MutableStateFlow(false)
     val geoSiteDownloading = _geoSiteDownloading.asStateFlow()
+
+    private val _importException = MutableStateFlow(false)
+    val importException = _importException.asStateFlow()
 
     val settingsState = repository.settingsFlow.stateIn(
         scope = viewModelScope,
@@ -88,23 +96,64 @@ class SettingsViewmodel(
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "downloadGeoIP: downloading")
             _geoIPDownloading.value = true
-            okHttpClient.newCall(request)
-                .execute().use { res ->
-                    if (!res.isSuccessful) throw IOException("Unexpected code $res")
+            okHttpClient.newCall(request).execute().use { res ->
+                if (!res.isSuccessful) throw IOException("Unexpected code $res")
 
-                    res.body?.let { body ->
-                        val externalFilesDir =
+                res.body?.let { body ->
+                    val externalFilesDir =
                             context.applicationContext.getExternalFilesDir("assert")
-                        val geoIpFile = File(externalFilesDir,"geoip.dat")
-                        geoIpFile.sink().buffer().use {sink ->
+                    val geoIpFile = File(externalFilesDir,"geoip.dat")
+                    geoIpFile.sink().buffer().use {sink ->
                             sink.writeAll(body.source())
-                        }
-                        _geoIPDownloading.value = false
-                        Log.i(TAG, "downloadGeoIP: download completed")
                     }
+                    _geoIPDownloading.value = false
+                    Log.i(TAG, "downloadGeoIP: download completed")
                 }
+            }
         }
+    }
 
+    fun onSelectFile(context: Context,uri: Uri,fileType: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val name = getFileName(uri,context)
+            if (name?.endsWith(".dat", ignoreCase = true) != true) {
+                Log.e(TAG, "onSelectFile: file type error")
+                launch {
+                    _importException.value = true
+                    delay(2000L)
+                    _importException.value = false
+                }
+                return@launch
+            }
+
+            val targetName = if (fileType == FILE_TYPE_IP)
+                "geoip.dat"
+            else "geosite.dat"
+            val file = File(context.filesDir,targetName)
+            val calculateFileHash = calculateFileHash(file)
+            Log.i(TAG, "onSelectFile: $calculateFileHash")
+            val input = context.contentResolver.openInputStream(uri)
+            input?.use { input ->
+                file.outputStream().use { output->
+                    input.copyTo(output)
+                }
+            }
+            val calculateFileHash1 = calculateFileHash(file)
+            Log.i(TAG, "onSelectFile: $calculateFileHash1")
+            Log.i(TAG, "onSelectFile: import successful")
+        }
+    }
+
+
+    private fun getFileName(uri: Uri,context: Context): String? {
+        val resolver = context.contentResolver
+        val cursor = resolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                return it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+        return uri.path?.substringAfterLast('/')
     }
 }
 
