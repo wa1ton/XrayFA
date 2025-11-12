@@ -56,6 +56,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.android.xrayfa.common.repository.SettingsKeys
+import com.android.xrayfa.viewmodel.FILE_TYPE_IP
+import com.android.xrayfa.viewmodel.FILE_TYPE_SITE
 
 @Composable
 fun SettingsScreen(
@@ -70,19 +72,20 @@ fun SettingsScreen(
 
     val geoIPDownloading by viewmodel.geoIPDownloading.collectAsState()
 
+    val importException by viewmodel.importException.collectAsState()
     val ipFilePickLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val uri = result.data?.data
-                Log.i(TAG, "SettingsScreen: $uri")
+                val uri = result.data?.data ?: return@rememberLauncherForActivityResult
+                viewmodel.onSelectFile(context,uri, FILE_TYPE_IP)
             }
     }
 
     val domainFilePickLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val uri = result.data?.data
-                Log.i(TAG, "SettingsScreen: $uri")
+                val uri = result.data?.data?: return@rememberLauncherForActivityResult
+                viewmodel.onSelectFile(context,uri, FILE_TYPE_SITE)
             }
         }
     Box(
@@ -206,6 +209,7 @@ fun SettingsScreen(
                 )
             }
         }
+        ExceptionMessage(importException,stringResource(R.string.import_geo_failed))
     }
 }
 

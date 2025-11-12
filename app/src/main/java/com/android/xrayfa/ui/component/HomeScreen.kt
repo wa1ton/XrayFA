@@ -37,7 +37,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,12 +65,9 @@ import androidx.compose.ui.unit.dp
 import com.android.xrayfa.R
 import com.android.xrayfa.model.Node
 import com.android.xrayfa.ui.ArcBottomShape
-import com.android.xrayfa.ui.navigation.Home
 import com.android.xrayfa.viewmodel.XrayViewmodel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
 @Composable
 fun HomeScreen(
@@ -101,7 +97,7 @@ fun HomeScreen(
                 true
             }
         }
-        NoConfigMessage(notConfig)
+        ExceptionMessage(notConfig,stringResource(R.string.config_not_ready))
     }
 }
 
@@ -317,31 +313,3 @@ fun DashboardContent(
     }
 }
 
-@Composable
-private fun NoConfigMessage(shown: Boolean) {
-    AnimatedVisibility(
-        visible = shown,
-        enter = slideInVertically(
-            // Enters by sliding in from offset -fullHeight to 0.
-            initialOffsetY = { fullHeight -> -fullHeight },
-            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing)
-        ),
-        exit = slideOutVertically(
-            // Exits by sliding out from offset 0 to -fullHeight.
-            targetOffsetY = { fullHeight -> -fullHeight },
-            animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing)
-        )
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.secondary,
-            shadowElevation = 4.dp
-        ) {
-            Text(
-                text = stringResource(R.string.config_not_ready),
-                color = MaterialTheme.colorScheme.onSecondary,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-    }
-}
