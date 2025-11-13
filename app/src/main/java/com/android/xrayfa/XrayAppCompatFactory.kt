@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.AppComponentFactory
 import com.android.xrayfa.di.DaggerXrayFAComponent
 import com.android.xrayfa.di.XrayFAComponent
@@ -64,6 +65,7 @@ class XrayAppCompatFactory: AppComponentFactory(),ContextAvailableCallback {
          val geositeFile = File(fileDir, "geosite.dat")
 
          if (!geoipFile.exists()) {
+             Log.i(TAG, "onContextAvailable: copy geoip.dat")
              context.assets.open("geoip.dat").use { input ->
                  FileOutputStream(geoipFile).use { output ->
                      input.copyTo(output)

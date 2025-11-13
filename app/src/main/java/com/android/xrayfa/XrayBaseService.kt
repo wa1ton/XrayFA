@@ -31,7 +31,7 @@ class XrayBaseService
 
     companion object {
 
-        const val TAG = "V2rayCoreService"
+        const val TAG = "XrayBaseService"
         const val CHANNEL_ID = "foreground_service_v2rayFA_channel"
         const val NOTIFICATION_ID = 1
 
@@ -66,7 +66,6 @@ class XrayBaseService
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        Log.i(TAG, "onCreate: ${getExternalFilesDir("assets")?.absolutePath}")
     }
 
     override fun onDestroy() {
