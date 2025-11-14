@@ -47,4 +47,8 @@
     <string name="geo_ip_description">IP matching table</string>
     <string name="geo_site_description">Site matching table</string>
     <string name="import_geo_failed">import geo file failed</string>
+    <string name="download_geo_failed">download geo file failed</string>
+    <string name="edit">edit</string>
+    <string name="can_not_be_empty">cannot be empty</string>
+    <string name="geo_import_try_later">Downloading, please try again later.</string>
 </resources>

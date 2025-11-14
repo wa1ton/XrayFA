@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -41,11 +42,11 @@ import kotlinx.coroutines.launch
 fun EditTextDialog(
     initialText: String,
     isNumeric: Boolean = false,
-    title: String? = "编辑",
+    title: String? = "",
     label: String? = null,
-    confirmText: String = "保存",
-    dismissText: String = "取消",
-    validator: (String) -> String? = { if (it.isBlank()) "不能为空" else null },
+    confirmText: String = "",
+    dismissText: String = "",
+    validator: (String) -> String? = {null},
     isConfirmLoading: Boolean = false,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit

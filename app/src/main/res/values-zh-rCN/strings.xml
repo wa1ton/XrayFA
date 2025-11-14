@@ -39,5 +39,9 @@
     <string name="repo_description">源代码</string>
     <string name="geo_ip_description">IP 匹配表</string>
     <string name="geo_site_description">域名匹配表</string>
-    <string name="import_geo_failed">导入geo文件失败</string>"
+    <string name="import_geo_failed">导入geo文件失败</string>
+    <string name="download_geo_failed">下载geo文件失败</string>
+    <string name="edit">编辑</string>
+    <string name="can_not_be_empty">不能为空</string>
+    <string name="geo_import_try_later">下载中 请稍后再试</string>"
 </resources>

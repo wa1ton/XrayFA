@@ -1,10 +1,12 @@
 package com.android.xrayfa.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,12 +19,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.android.xrayfa.R
 import com.android.xrayfa.common.di.qualifier.LongTime
 import com.android.xrayfa.common.utils.calculateFileHash
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.IOException
@@ -52,6 +56,9 @@ class SettingsViewmodel(
 
     private val _importException = MutableStateFlow(false)
     val importException = _importException.asStateFlow()
+
+    private val _downloadException = MutableStateFlow(false)
+    val downloadException = _downloadException.asStateFlow()
 
     val settingsState = repository.settingsFlow.stateIn(
         scope = viewModelScope,
@@ -90,6 +97,9 @@ class SettingsViewmodel(
 
 
     fun downloadGeoSite(context: Context) {
+        if (_geoSiteDownloading.value || _geoIPDownloading.value) {
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             _geoSiteDownloading.value = true
             download(FILE_TYPE_SITE,context)
@@ -98,33 +108,52 @@ class SettingsViewmodel(
     }
 
     fun downloadGeoIP(context: Context) {
+
+        if (_geoSiteDownloading.value || _geoIPDownloading.value) {
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             _geoIPDownloading.value = true
             download(FILE_TYPE_IP,context)
             _geoIPDownloading.value = false
         }
     }
-    private suspend fun download(fileType: Int, context: Context) {
+    private suspend fun download(fileType: Int, context: Context)  = withContext(Dispatchers.IO ){
         val url = if (fileType == FILE_TYPE_IP) geoIPUrlTest else geoSiteUrlTest
         val request = Request.Builder()
             .url(url)
             .build()
-            Log.i(TAG, "$url: downloading")
-        okHttpClient.newCall(request).execute().use { res ->
-            if (!res.isSuccessful) throw IOException("Unexpected code $res")
+        Log.i(TAG, "$url: downloading")
+        try {
+            okHttpClient.newCall(request).execute().use { res ->
+                if (!res.isSuccessful) throw IOException("Unexpected code $res")
 
-            res.body?.let { body ->
-                val file =
-                    File(context.filesDir,if (FILE_TYPE_IP == fileType)"geoip.dat" else "geosite.dat")
-                file.sink().buffer().use { sink ->
+                res.body?.let { body ->
+                    val file =
+                        File(context.filesDir,if (FILE_TYPE_IP == fileType)"geoip.dat" else "geosite.dat")
+                    file.sink().buffer().use { sink ->
                         sink.writeAll(body.source())
+                    }
                 }
             }
-
+        }catch (e: Exception) {
+            if (fileType == FILE_TYPE_IP) _geoIPDownloading.value = false
+            else _geoSiteDownloading.value = false
+            launch {
+                _downloadException.value = true
+                delay(2000L)
+                _downloadException.value = false
+            }
+            Log.e(TAG, "download: exception $e")
         }
+
     }
 
     fun onSelectFile(context: Context,uri: Uri,fileType: Int) {
+        if (_geoSiteDownloading.value || _geoIPDownloading.value) {
+            Toast.makeText(context,R.string.geo_import_try_later,Toast.LENGTH_SHORT).show()
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val name = getFileName(uri,context)
             if (name?.endsWith(".dat", ignoreCase = true) != true) {
