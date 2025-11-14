@@ -73,6 +73,7 @@ fun SettingsScreen(
     val geoIPDownloading by viewmodel.geoIPDownloading.collectAsState()
     val geoSiteDownloading by viewmodel.geoSiteDownloading.collectAsState()
     val importException by viewmodel.importException.collectAsState()
+    val downloadException by viewmodel.downloadException.collectAsState()
     val ipFilePickLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -157,6 +158,11 @@ fun SettingsScreen(
                         }
                     }
                 )
+
+            }
+            SettingsGroup(
+                groupName = "other"
+            ) {
                 SettingsWithBtnBox(
                     title = R.string.geo_ip,
                     description = R.string.geo_ip_description,
@@ -183,10 +189,6 @@ fun SettingsScreen(
                         domainFilePickLauncher.launch(intent)
                     }
                 )
-            }
-            SettingsGroup(
-                groupName = "other"
-            ) {
                 SettingsFieldBox(
                     title = R.string.repo_site,
                     content = stringResource(R.string.repo_description)
@@ -196,8 +198,12 @@ fun SettingsScreen(
             }
             if (isShowEditDialog) {
                 EditTextDialog(
+                    title = stringResource(R.string.edit),
+                    dismissText = stringResource(R.string.cancel),
+                    confirmText = stringResource(R.string.save),
                     initialText = editInitValue,
                     isNumeric = true,
+                    validator = {if (it.isBlank()) context.getString(R.string.can_not_be_empty) else null},
                     onConfirm = {
                         when(editType) {
                             SettingsKeys.SOCKS_PORT ->
@@ -211,7 +217,13 @@ fun SettingsScreen(
                 )
             }
         }
-        ExceptionMessage(importException,stringResource(R.string.import_geo_failed))
+        ExceptionMessage(
+            shown = importException || downloadException,
+            msg = if (importException)
+                stringResource(R.string.import_geo_failed)
+            else
+            stringResource(R.string.download_geo_failed)
+        )
     }
 }
 
