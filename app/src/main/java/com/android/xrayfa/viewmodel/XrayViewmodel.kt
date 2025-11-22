@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
@@ -77,8 +76,8 @@ class XrayViewmodel(
     private val _isServiceRunning = MutableStateFlow(XrayBaseService.isRunning)
     val isServiceRunning: StateFlow<Boolean> = _isServiceRunning.asStateFlow()
 
-    private val _qrcodebitmap = MutableStateFlow<Bitmap?>(null)
-    val qrBitmap: StateFlow<Bitmap?> = _qrcodebitmap.asStateFlow()
+    private val _qrcodeBitmap = MutableStateFlow<Bitmap?>(null)
+    val qrBitmap: StateFlow<Bitmap?> = _qrcodeBitmap.asStateFlow()
 
     private val _deleteDialog = MutableStateFlow(false)
     val deleteDialog: StateFlow<Boolean> = _deleteDialog.asStateFlow()
@@ -281,7 +280,7 @@ class XrayViewmodel(
             val barcodeEncoder = BarcodeEncoder()
             shareUrl = link.content
             val bitmap = barcodeEncoder.encodeBitmap(shareUrl, BarcodeFormat.QR_CODE,400,400)
-            _qrcodebitmap.value = bitmap
+            _qrcodeBitmap.value = bitmap
         }
     }
     //export clipboard
@@ -313,7 +312,7 @@ class XrayViewmodel(
     }
 
     fun dismissDialog() {
-        _qrcodebitmap.value = null
+        _qrcodeBitmap.value = null
     }
 
     fun measureDelay(context: Context) {

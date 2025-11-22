@@ -1,5 +1,9 @@
 package com.android.xrayfa.viewmodel
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -12,6 +16,8 @@ import com.android.xrayfa.parser.SubscriptionParser
 import com.android.xrayfa.repository.LinkRepository
 import com.android.xrayfa.repository.SubscriptionRepository
 import com.android.xrayfa.viewmodel.XrayViewmodel.Companion.TAG
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +57,11 @@ class SubscriptionViewmodel(
 
     private val _requestingSubscription = MutableStateFlow(false)
     val requesting = _requestingSubscription.asStateFlow()
+
+    private val _qrcodeBitmap = MutableStateFlow<Bitmap?>(null)
+    val qrBitmap: StateFlow<Bitmap?> = _qrcodeBitmap.asStateFlow()
+
+    var shareUrl: String? = null
     init {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -119,6 +130,34 @@ class SubscriptionViewmodel(
 
     fun setSelectSubscriptionEmpty() {
         _selectSubscription.value = emptySubscription
+    }
+
+
+    fun generateQRCode(id: Int) {
+        viewModelScope.launch {
+            shareUrl = repository.getSubscriptionById(id).first().url
+            shareUrl?.let {
+                val barcodeEncoder = BarcodeEncoder()
+                val bitmap = barcodeEncoder.encodeBitmap(it, BarcodeFormat.QR_CODE,400,400)
+                _qrcodeBitmap.value = bitmap
+            }
+        }
+    }
+
+    //export clipboard
+    fun exportConfigToClipboard(context: Context) {
+        if (shareUrl == "") {
+            return
+        }
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+        val clip = ClipData.newPlainText("label", shareUrl)
+        clipboard.setPrimaryClip(clip)
+        shareUrl == ""
+    }
+
+    fun dismissQRCode() {
+        _qrcodeBitmap.value = null
     }
 
 
