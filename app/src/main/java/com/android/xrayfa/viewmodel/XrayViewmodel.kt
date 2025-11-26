@@ -216,7 +216,7 @@ class XrayViewmodel(
 
 
 
-    fun deleteLinkById(id: Int) {
+    fun deleteNodeById(id: Int) {
         viewModelScope.launch {
             repository.deleteLinkById(id)
         }
@@ -265,7 +265,7 @@ class XrayViewmodel(
     }
 
     fun deleteNodeByIdWithDialog() {
-        deleteLinkById(deleteLinkId)
+        deleteNodeById(deleteLinkId)
         hideDeleteDialog()
     }
 

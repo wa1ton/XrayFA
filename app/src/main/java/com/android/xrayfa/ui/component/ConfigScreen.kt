@@ -136,7 +136,7 @@ fun ConfigScreen(
                                 xrayViewmodel.startDetailActivity(context = context,id = node.id)
                             },
                             selected =node.selected,
-                            countryEmoji = Device.countryCodeToEmoji(node.countryISO)
+                            countryEmoji = node.countryISO
                         )
                     }
                 }

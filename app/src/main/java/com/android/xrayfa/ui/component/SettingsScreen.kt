@@ -217,7 +217,7 @@ fun SettingsScreen(
                     description = R.string.geo_ip_lite_description,
                     onDownloadClick = {viewmodel.downloadGeoLite(context)},
                     downloading = geoLiteDownloading,
-                    onImportClick = {}
+                    enable = settingsState.geoLiteInstall
                 )
             }
             SettingsGroup(
@@ -237,7 +237,8 @@ fun SettingsScreen(
                 }
                 SettingsFieldBox(
                     title = R.string.repo_site,
-                    content = stringResource(R.string.repo_description)
+                    content = stringResource(R.string.repo_description),
+                    icon = ImageVector.vectorResource(R.drawable.ic_github)
                 ) {
                     viewmodel.openRepo(context)
                 }
@@ -325,7 +326,8 @@ fun SettingsWithBtnBox(
     @StringRes description: Int,
     downloading: Boolean = false,
     onDownloadClick: () -> Unit = {},
-    onImportClick: () -> Unit = {}
+    onImportClick: (() -> Unit)? = null,
+    enable: Boolean = true
 ) {
 
     val infiniteTransition = rememberInfiniteTransition()
@@ -340,7 +342,7 @@ fun SettingsWithBtnBox(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {},
+            .clickable {}, //todo optional: download url
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -350,11 +352,13 @@ fun SettingsWithBtnBox(
         ) {
             Text(
                 text = stringResource(title),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = if (enable) MaterialTheme.colorScheme.onBackground else Color.Gray
             )
             Text(
                 text = stringResource(description),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (enable) MaterialTheme.colorScheme.onBackground else Color.Gray
             )
         }
         Row(
@@ -374,14 +378,16 @@ fun SettingsWithBtnBox(
                         .rotate(angle)
                 )
             }
-            IconButton(
-                onClick = onImportClick
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_import),
-                    contentDescription = "import",
-                    modifier = Modifier.size(24.dp)
-                )
+            if (onImportClick != null) {
+                IconButton(
+                    onClick = onImportClick
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_import),
+                        contentDescription = "import",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }
@@ -481,6 +487,7 @@ fun SettingsFieldBox(
     @StringRes title: Int,
     content: String,
     enable: Boolean = true,
+    icon: ImageVector? = null,
     onClick: () ->Unit
 ) {
     Row(
@@ -505,6 +512,14 @@ fun SettingsFieldBox(
                 text = content,
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (enable) MaterialTheme.colorScheme.onBackground else Color.Gray
+            )
+        }
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = "",
+                modifier = Modifier.size(24.dp)
+                    .weight(0.2f)
             )
         }
     }
@@ -628,34 +643,4 @@ fun validateIpv6List(input: String, context: Context): String? {
 
     // All valid
     return null
-}
-
-
-@Composable
-@Preview
-fun SettingsFieldBoxPreview() {
-    SettingsFieldBox(
-        R.string.enable_ipv6,
-        "192.168.0.1",
-    ) {
-        //empty
-    }
-}
-
-@Composable
-@Preview
-fun SettingsSelectBoxPreview() {
-    SettingsSelectBox(
-        R.string.delete,
-        R.string.delete_notify
-    )
-}
-
-@Composable
-@Preview
-fun SettingsCheckBoxPreview() {
-    SettingsCheckBox(
-        R.string.cancel,
-        R.string.save
-    )
 }

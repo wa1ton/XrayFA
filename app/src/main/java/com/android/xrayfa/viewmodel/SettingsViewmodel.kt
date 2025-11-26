@@ -139,10 +139,11 @@ class SettingsViewmodel(
         if (_geoSiteDownloading.value || _geoIPDownloading.value || _geoLiteDownloading.value) {
             return
         }
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO){ 
             _geoLiteDownloading.value = true
             download(GEOFileType.FILE_TYPE_LITE,context)
             _geoLiteDownloading.value = false
+            Log.i(TAG, "downloadGeoLite: download successful!")
             repository.setGeoLiteInstall(true)
         }
 

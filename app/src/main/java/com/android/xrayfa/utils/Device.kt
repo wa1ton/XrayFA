@@ -31,7 +31,7 @@ object Device {
             val reader = DatabaseReader.Builder(file).build()
             val address = InetAddress.getByName(ip)
             val res = reader.country(address)
-            res.country.isoCode ?: ""
+            countryCodeToEmoji(res.country.isoCode ?: "")
         }catch (e: Exception) {
             Log.e(TAG, "getCountryFromIp: parse ip failed: ${e.message}")
             ""
@@ -40,7 +40,7 @@ object Device {
 
 
 
-    fun countryCodeToEmoji(countryCode: String): String {
+    private fun countryCodeToEmoji(countryCode: String): String {
         val code = countryCode.uppercase()
         if (code.length != 2) return "❓"
         val flagOffset = 0x1F1E6
